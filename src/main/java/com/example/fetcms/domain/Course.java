@@ -1,6 +1,12 @@
 package com.example.fetcms.domain;
 
+
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "course")
@@ -18,20 +24,23 @@ public class Course {
     private int semester;
     private int level;
     private String course_master;
+    private  String department;
+    private String program;
 
-    //@ManyToOne
-    //private Program program;
 
-    //private Department department;
+    @ManyToOne
+    @JsonBackReference
+    @JoinTable(name = "course_courseOutline",
+            joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "courseOutline_id", referencedColumnName = "courseOutline_id"))
 
-    // Foreign key department_id
-
+    private Set<CourseOutline> courseOutline = new HashSet<CourseOutline>();
 
     public Course(){
     }
 
 
-    public Course(long id, String course_code, String course_title, int course_value, int semester, int level, String course_master, long programId, long departmentId){
+    public Course(long id, String course_code, String course_title, int course_value, int semester, int level, String course_master, String department, String program, Set<CourseOutline> courseOutline){
         this.id = id;
         this.course_code = course_code;
         this.course_title = course_title;
@@ -39,11 +48,10 @@ public class Course {
         this.semester = semester;
         this.level = level;
         this.course_master = course_master;
-        //this.program = new Program(programId, "", departmentId);
+        this.department = department;
+        this.program = program;
+        this.courseOutline = courseOutline;
     }
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "department_id")
 
     public long getId() {
         return id;
@@ -101,11 +109,43 @@ public class Course {
         this.course_master = course_master;
     }
 
-   /* public Program getProgram() {
+    public String getDepartment_name() {
+        return department;
+    }
+
+    public void setDepartment_name(String department_name) {
+        this.department = department_name;
+    }
+
+    public String getProgram_name() {
         return program;
     }
 
-   // public void setProgram(Program program) {
+    public void setProgram_name(String program_name) {
+        this.program = program_name;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getProgram() {
+        return program;
+    }
+
+    public void setProgram(String program) {
         this.program = program;
-    }*/
+    }
+
+    public Set<CourseOutline> getCourseOutline() {
+        return courseOutline;
+    }
+
+    public void setCourseOutline(Set<CourseOutline> courseOutline) {
+        this.courseOutline = courseOutline;
+    }
 }
