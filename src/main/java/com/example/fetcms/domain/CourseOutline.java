@@ -5,14 +5,18 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "content")
+@Table(name = "courseOutline")
 public class CourseOutline {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "courseOutline_id")
-    private long id;
-    private String chapter;
+    private long courseOutline_id;
+
+    @Column(name = "chapter_id")
+    private Long chapter;
+
+    @Column(name = "content")
     private String content;
 
 
@@ -24,19 +28,27 @@ public class CourseOutline {
 
     private Course course;
 
-    public long getId() {
-        return id;
+    public CourseOutline(){
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public CourseOutline(Long chapter, String content){
+        this.chapter = chapter;
+        this.content = content;
     }
 
-    public String getChapter() {
+    public long getCourseOutline_id() {
+        return courseOutline_id;
+    }
+
+    public void setCourseOutline_id(long courseOutline_id) {
+        this.courseOutline_id = courseOutline_id;
+    }
+
+    public Long getChapter() {
         return chapter;
     }
 
-    public void setChapter(String chapter) {
+    public void setChapter(Long chapter) {
         this.chapter = chapter;
     }
 

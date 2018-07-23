@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,14 +29,14 @@ public class Course {
     private String program;
 
 
-    @ManyToOne
-    @JsonBackReference
+    @ManyToMany(cascade = CascadeType.ALL)
+    //@JsonBackReference
     @JoinTable(name = "course_courseOutline",
             joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "courseOutline_id", referencedColumnName = "courseOutline_id"))
 
     private Set<CourseOutline> courseOutline = new HashSet<CourseOutline>();
-
+    //private  CourseOutline courseOutline;
     public Course(){
     }
 

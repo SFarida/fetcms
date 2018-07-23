@@ -1,10 +1,18 @@
 package com.example.fetcms.controller;
 
 import com.example.fetcms.domain.Course;
+import com.example.fetcms.domain.CourseOutline;
+import com.example.fetcms.excell.Input;
 import com.example.fetcms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -14,47 +22,98 @@ public class CourseController {
     private CourseRepository courseRepository;
 
     @RequestMapping("/courses")
-    public List<Course> getAllCourses(){
+    public ResponseEntity<List<Course>> getAllCourses(){
         List<Course> courses;
         courses = (List<Course>) courseRepository.findAll();
-        return courses;
+        return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
-    @RequestMapping( "/Courses/{level}")
-    public List<Course> getAllCourseBylevel(@PathVariable int level){
-        return courseRepository.findByLevel(level);
+    @RequestMapping( "/courses/level/{level}")
+    public ResponseEntity<List<Course>> getAllCourseByLevel(@PathVariable int level){
+        List<Course> courses;
+        courses = courseRepository.findByLevel(level);
+        return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
-    @RequestMapping( "/Courses/{course_code}")
-    public List<Course> getAllCourseByCode(@PathVariable int course_code){
-        return courseRepository.findByCode(course_code);
+    @RequestMapping( "/courses/course_code/{course_code}")
+    public ResponseEntity<List<Course>> getAllCourseByCode(@PathVariable String course_code){
+        List<Course> courses;
+        courses = courseRepository.findByCode(course_code);
+        return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
     @RequestMapping( "/Courses/{level}/{program}/{semester}")
-    public List<Course> getAllCourseByFilter(@PathVariable int level, @PathVariable String program, @PathVariable int semester){
-        return courseRepository.findByFilter(level, program, semester);
+    public ResponseEntity<List<Course>> getAllCourseByFilter(@PathVariable int level, @PathVariable String program, @PathVariable int semester){
+        List<Course> courses;
+        courses = courseRepository.findByFilter(level, program, semester);
+        return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/courses")
-    public void addCourse(@RequestBody Course course){
-        courseRepository.save(course);
+    public ResponseEntity<Course> addCourse(@RequestBody Course course){
+        Course newcourse;
+        newcourse = courseRepository.save(course);
+        return new ResponseEntity<>(newcourse, HttpStatus.OK);
     }
 
     @RequestMapping("/courses/{id}")
-    public Course getCourse(@PathVariable Long id){
+    public ResponseEntity<Course> getCourse(@PathVariable Long id){
         Course particularCourse;
         particularCourse = courseRepository.findOne(id);
-        return particularCourse;
+        return new ResponseEntity<>(particularCourse, HttpStatus.OK);
     }
 
     @RequestMapping(method=RequestMethod.DELETE, value="/courses/{id}")
-    public void deleteCourse(@PathVariable Long id){
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id){
         courseRepository.delete(id);
+        return new ResponseEntity<>("delete", HttpStatus.OK);
     }
 
     @RequestMapping(method=RequestMethod.PUT, value="/courses/{id}")
-    public void updateCourse(@RequestBody Course course, @PathVariable Long id){
-        courseRepository.save(course);
+    public ResponseEntity<Course> updateCourse(@RequestBody Course course, @PathVariable Long id){
+        Course updatedcourse;
+        updatedcourse = courseRepository.save(course);
+        return new ResponseEntity<>(updatedcourse, HttpStatus.OK);
+    }
+
+
+
+
+
+
+    //***********************************Excell************************************//
+    @RequestMapping(
+            value = "/excelSheet",
+            method = RequestMethod.GET,
+            consumes = MediaType.ALL_VALUE
+    )
+    public void downloadExcel(HttpServletResponse response) throws ClassNotFoundException, IOException {
+
+        Input.download(response);
+    }
+
+
+    @RequestMapping(
+            value = "/upload",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<List<CourseOutline>> customersFormUpload(@RequestParam("file") MultipartFile file) throws
+            IOException {
+        List<CourseOutline> output;
+        output =Input.ExcellUpload(file);
+        return new ResponseEntity<>(output, HttpStatus.OK);
+    }
+
+
+    @RequestMapping("/all")
+    public void allClass() {
+        Class<?> current = Course.class;
+        while (current.getSuperclass() != null) { // we don't want to process Object.class
+            // do something with current's fields
+            current = current.getSuperclass();
+            System.out.println(current);
+        }
     }
 
 
