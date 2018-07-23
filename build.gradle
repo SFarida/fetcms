@@ -50,5 +50,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.mchange/c3p0
     //compile group: 'com.mchange', name: 'c3p0', version: '0.9.5.2'
 
+    compile('com.lowagie:itext:2.1.7')
+
 
 }

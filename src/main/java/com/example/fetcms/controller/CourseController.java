@@ -3,8 +3,11 @@ package com.example.fetcms.controller;
 import com.example.fetcms.domain.Course;
 import com.example.fetcms.domain.CourseOutline;
 import com.example.fetcms.excell.Input;
+import com.example.fetcms.report.GeneratePdfReport;
 import com.example.fetcms.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -114,6 +118,30 @@ public class CourseController {
             current = current.getSuperclass();
             System.out.println(current);
         }
+    }
+
+
+
+
+    //************************************Pdf Report********************************//
+
+    @RequestMapping(value = "/pdfreport", method = RequestMethod.POST,
+            produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> pdfReport(@RequestBody List<Course> courselist) throws IOException {
+
+        //  List<Course> courselist=courseRepository.findAll();
+
+        ByteArrayInputStream bis = GeneratePdfReport.courseReport(courselist);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/pdf"));
+        headers.add("Content-Disposition", "offline; filename = courses.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 
 
